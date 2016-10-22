@@ -1,0 +1,39 @@
+<html>
+
+<head>
+<meta charset="utf-8" />
+	<link rel="stylesheet" type="text/css" href="css/styles.css" />
+	<script src="/js/events.js"></script>
+</head>
+<title>
+RosPuhMeh</title>
+
+<body class="tender">
+	<header>ROSPUHMEH TENDERS
+	
+	</header>
+	<nav class="tender-nav">
+
+	<section class="tender-control">
+	<div id="tenderName">
+	<div>Tender name: </div><div><input type="text" name="tenderName" id="tenderName"></div></div>
+	<div id="tenderPrice">
+	<div>Price: </div><div><input type="text" name="tenderPrice" id="tenderPrice"></div></div>
+	<input type="hidden" name="tenderHash">
+	<div><button onclick="tender.addToDB()">Отправить</button></div>
+	<div><button onclick="tender.getFromDB()">Извлечь</button></div>
+	<div><button onclick="tender.truncateDB()">Очистить базу</button></div>
+	</section>
+
+	</nav>
+	<main id="tender-content">
+
+	</main>
+	<footer class="tender-footer">
+	<div>
+© Monkey Coding Limited, 2016-2020
+	</div></footer>
+	
+</body>
+
+</html>

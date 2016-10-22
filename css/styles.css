@@ -1,0 +1,85 @@
+body {
+    margin: 0px !important;
+}
+
+.tender {
+    display: flex;
+    flex-flow: column;
+    flex-wrap: nowrap;
+}
+
+.tender-nav {
+    order: 0;
+    flex-direction: row;
+    display: flex;
+    justify-content: center;
+}
+
+
+.tender-control {
+    
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+    flex: 0 0 50%;
+    padding: 5px;
+    margin: 15px;
+    border: 1px dotted #808080;
+    
+}
+
+.tender-control div {
+    flex-direction: column;
+    display: flex;
+}
+
+.tender-control div button {
+    margin: 5px;
+    flex-basis: 40px;
+    align-self: center;
+}
+
+
+
+#tender-content {
+    order: 1;
+    display: flex;
+    flex-flow: row wrap;
+    border-top: 2px dotted #808080;
+}
+
+#tender-content div {
+    flex-basis: 15%;
+    background-color: #f2f2f2;
+    margin: 10px;
+    padding: 5px;
+    border: 1px dotted #cccccc;
+    cursor: default;
+}
+
+#tender-content div:hover {
+    background-color: #daffb3;
+}
+
+
+
+header {
+    font-size: 38;
+    font-weight: 500;
+    color: 	 #555555;
+    font-family: Tahoma;
+    border-bottom: 2px dotted #808080;
+    padding: 10px 20px;
+}
+
+footer {
+  font-size: 13px;
+  color: #666666;
+  text-align: left;
+  order: 3;
+}
+
+footer div {
+  border-top: 1px dotted #d9d9d9;
+  padding-top: 4px 10px;
+}
