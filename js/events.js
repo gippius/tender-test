@@ -1,11 +1,8 @@
 var tender = {
-
-
     addToDB: function () {
         let tenderName = document.getElementById('tenderName').value,
             tenderPrice = document.getElementById('tenderPrice').value,
             body = "action=add&name=" + tenderName + '&price=' + tenderPrice;
-
         xhrSend("process.php", body);
     },
     getFromDB: function () {
@@ -16,47 +13,77 @@ var tender = {
         let body = 'action=truncate';
         xhrSend('process.php', body);
     },
-    removeRecord: function (num) {
+    removeFromDB: function (num) {
         let body = 'action=remove&id=' + num;
         xhrSend('process.php', body);
+    },
+    callbackMapper: {
+        dataSelected: function (response) {
+            let tendersCount = response.length;
+            
+            emptyTendersList();
+            for (var i = 0; i < tendersCount; i++) {
+                
+                pushNewTenderDiv(response[i]);
+            }
+        },
+        recordDeleted: function () {
+            console.log('table changed, refreshing now..');
+            tender.getFromDB();
+        },
+        tableTruncated: function () {
+            console.log('table changed, refreshing now..');
+            tender.getFromDB();
+        },
+        recordAdded: function () {
+            console.log('table changed, refreshing now..');
+            tender.getFromDB();
+        }
     }
 }
 
-
+// listening server for refresh command
 let eventSource = new EventSource('eventTransmitter.php');
-eventSounce.onmessage = function(e){
-console.log(e);
+eventSource.onmessage = function (e) {
+    console.log(e);
 }
+
+document.addEventListener('DOMContentLoaded', tender.getFromDB);
 
 function responseHandle(data) {
 
+    /*
+    if (!JSON.parse(data).responseType) {
+        return;
+    };
+*/
 
+    let response = JSON.parse(data),
+        actionRequired = response.responseType;
 
-    let actionRequired = 'addOnPage',
-        response = JSON.parse(data),
-        tendersCount = response.length,
-        callbackMapper = {
-            addOnPage: function (response) {
-                emptyTendersList();
-                for (var i = 0; i < tendersCount; i++) {
-                    console.log(response[i]);
-                    pushNewTenderDiv(response[i]);
-                }
-
-            }
-        }
-    callbackMapper[actionRequired](response);
+    // response types provided by php: 
+    // recordAdded, recordRemoved, dataSelected, tableTruncated
+    if (!actionRequired || !tender.callbackMapper[actionRequired]) {
+        return;
+    }
+    tender.callbackMapper[actionRequired](response['data']);
 }
 
 function pushNewTenderDiv(data) {
     let newDiv = document.createElement('div'),
-        list = document.getElementById('tender-content');
+        list = document.getElementById('tender-content'),
+        thisId = data.id;
 
-    newDiv.innerHTML = '<b>' + data.id + '</b><br>' +
-        data.name + '<br>' + data.price + 'rur';
-
+    newDiv.setAttribute('data-id', thisId);
+    newDiv.classList.add('tender-div');
+    newDiv.addEventListener('click', function () {
+        tender.removeFromDB(thisId);
+        console.log('removing record number ' + thisId);
+        
+    });
+    newDiv.innerHTML = '<b>' + thisId + '</b>. ' +
+        data.name + '<br>' + data.price + ' rur';
     list.appendChild(newDiv);
-
 }
 
 function emptyTendersList() {
@@ -65,15 +92,12 @@ function emptyTendersList() {
 
 function xhrSend(url, body) {
     let r = new XMLHttpRequest();
-
     r.open("POST", url, true);
     r.addEventListener("load", function () {
         if (r.readyState == 4 && r.status == 200) {
             responseHandle(r.responseText);
         }
     });
-
     r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
     r.send(body);
 }
