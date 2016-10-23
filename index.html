@@ -1,7 +1,8 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<link rel="stylesheet" type="text/css" href="css/styles.css" />
+	<link href="css/styles.css" rel="stylesheet" type="text/css" />
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 	<script src="/js/events.js"></script>
 </head>
 <title>
@@ -14,25 +15,18 @@
 	<nav class="tender-nav">
 		<section class="tender-control">
 			<div id="tenderNameContainer">
-				<div>Tender name: </div>
-				<div><input type="text" name="tenderName" id="tenderName"></div>
+				<div><input type="text" name="tenderName" class="tender-input" id="tenderName" placeholder="NAME"></div>
 			</div>
 			<div id="tenderPriceContainer">
-				<div>Price: </div>
-				<div><input type="text" name="tenderPrice" id="tenderPrice"></div>
+				<div><input type="text" name="tenderPrice" class="tender-input" id="tenderPrice" placeholder="PRICE"></div>
 			</div>
 			<input type="hidden" name="tenderHash">
 			<div>
-				<button onclick="tender.addToDB()">Отправить</button>
+				<button onclick="tender.addToDB()" class="tender-submit-button">SUBMIT</button>
 			</div>
-			<div>
-				<button onclick="tender.getFromDB()">Извлечь</button>
-			</div>
-			<div>
-				<button onclick="tender.truncateDB()">Очистить базу</button>
-			</div>
-		</section>
+		</section> 
 	</nav>
+	<h2 id="main-section-header">Tenders available</h2>
 	<main id="tender-content">
 	</main>
 	<footer class="tender-footer">

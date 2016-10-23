@@ -3,6 +3,7 @@ body {
     display: flex;
     flex-flow: column;
     flex-wrap: nowrap;
+    font-family: 'Roboto', sans-serif;
 }
 
 
@@ -10,35 +11,43 @@ body {
     order: 0;
     flex-direction: row;
     display: flex;
-    justify-content: center;
     
-    border-top: 2px dotted #808080;
-    border-bottom: 2px dotted #808080;
 }
 
+.tender-submit-button {
+    background-color: #00bcd4;
+    border: none;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    width: 100px;
+    border-radius: 3px;
+}
+
+.tender-input {
+    padding-left: 5px;
+    font-size: 15px;
+    border: 1px solid #cccccc;
+    border-radius: 3px;
+}
 
 .tender-control {
-    
     flex-direction: row;
     display: flex;
-    justify-content: space-between;
     flex: 0 0 50%;
-    padding: 5px;
-    margin: 15px;
-    border: 1px dotted #808080;
+    padding: 45px;
+    align-self: flex-start
     
 }
 
 .tender-control div {
-    flex-direction: column;
     display: flex;
+    margin-right: 5px;
+    align-self: flex-start;
+    height: 40px;
 }
 
-.tender-control div button {
-    margin: 5px;
-    flex-basis: 40px;
-    align-self: center;
-}
 
 
 
@@ -46,30 +55,54 @@ body {
     order: 1;
     display: flex;
     flex-flow: row wrap;
-    background-color: #f2f2f2;
+    padding: 0px 0px 45px 45px;
+    border-bottom: 1px solid #cccccc;
 }
 
-#tender-content div {
-    flex-basis: 15%;
-    margin: 10px;
+.tender-div {
+    display: flex;
+    flex-flow: column nowrap;
+    flex-basis: 30%;
     padding: 5px;
-    border: 1px solid #cccccc;
-    background-color: #ffffff;
+    margin-right: 10px;
+    margin-bottom: 10px;
     cursor: default;
+    background-color: #E0F7FA;
+    border-radius: 3px;
+}
+
+.inside-name {
+    order: 1;
+    align-self: flex-start;
+    font-size: 20px;
+}
+
+.inside-price {
+    order: 2;
+    align-self: flex-end;
+    font-weight: 200;
+    font-size: 16px;
+    color: #757575;
+}
+
+#main-section-header {
+    font-weight: 500;
+    margin: 0px 0px 10px 45px;
+    color: #00bcd4;
 }
 
 #tender-content div:hover {
-    background-color: #f2ffcc;
+    background-color: #B2EBF2;
 }
 
 
 
 header {
     font-size: 38;
-    font-weight: 500;
     color: 	 #555555;
-    font-family: Tahoma;
-    padding: 10px 30px;
+    padding: 45px;
+    background-color: #00bcd4;
+    color: white;
 }
 
 footer {
@@ -80,6 +113,6 @@ footer {
 }
 
 footer div {
-  border-top: 1px dotted #d9d9d9;
   padding-top: 4px 10px;
+  margin: 45px;
 }

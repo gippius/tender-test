@@ -11,7 +11,7 @@
 function dbCheckForUpdate(){
   $servername = 'localhost';
 $username='root';
-$password='fuckyou';
+$password='password';
 $dbname='tender1';
 
 $connect = mysqli_connect($serverName, $username, $password, $dbname);
@@ -28,9 +28,7 @@ while($row = mysqli_fetch_assoc($result)){
     $thisCreatedTime = $row['createdTime'];
     $thisDoneTime = $row['doneTime'];
 
-    $lastChange = returnGreater($thisCreatedTime, $thisDoneTime);
-
-    $dataArr = array('lastChangeTime' => 'хуй');
+    $dataArr = array('lastChangeTime' => $thisCreatedTime);
 
 
       } 
@@ -39,7 +37,6 @@ while($row = mysqli_fetch_assoc($result)){
       $dataJSON = json_encode($dataArr, JSON_UNESCAPED_UNICODE);
       
 mysqli_close($connect);
-
 return $dataJSON;
 
 }
@@ -51,10 +48,11 @@ header("Content-Type: text/event-stream\n\n");
 $counter = rand(1, 10);
 while (1) {
   // Every second, sent a "ping" event.
-  
+  $lastUpdateDB = dbCheckForUpdate();
   echo "event: ping\n";
   $curDate = date(DATE_ISO8601);
   echo 'data: {"time": "' . $curDate . '"}';
+  echo 'data: {"text": "' . $lastUpdateDB. '"}';
   echo "\n\n";
   
   

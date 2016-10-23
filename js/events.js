@@ -20,10 +20,10 @@ var tender = {
     callbackMapper: {
         dataSelected: function (response) {
             let tendersCount = response.length;
-            
+
             emptyTendersList();
             for (var i = 0; i < tendersCount; i++) {
-                
+
                 pushNewTenderDiv(response[i]);
             }
         },
@@ -51,17 +51,12 @@ eventSource.onmessage = function (e) {
 document.addEventListener('DOMContentLoaded', tender.getFromDB);
 
 function responseHandle(data) {
-
-    /*
-    if (!JSON.parse(data).responseType) {
-        return;
-    };
-*/
-
+    // parsed response looks like {"responseType": "type", "data": [{..}, {..}..]}
     let response = JSON.parse(data),
         actionRequired = response.responseType;
 
-    // response types provided by php: 
+    // skipping all responses except ones which types
+    // are known and provided by server php: 
     // recordAdded, recordRemoved, dataSelected, tableTruncated
     if (!actionRequired || !tender.callbackMapper[actionRequired]) {
         return;
@@ -73,16 +68,14 @@ function pushNewTenderDiv(data) {
     let newDiv = document.createElement('div'),
         list = document.getElementById('tender-content'),
         thisId = data.id;
-
     newDiv.setAttribute('data-id', thisId);
     newDiv.classList.add('tender-div');
     newDiv.addEventListener('click', function () {
         tender.removeFromDB(thisId);
         console.log('removing record number ' + thisId);
-        
     });
-    newDiv.innerHTML = '<b>' + thisId + '</b>. ' +
-        data.name + '<br>' + data.price + ' rur';
+    newDiv.innerHTML = '<div class="inside-name">' + thisId + '. ' +
+        data.name + '</div><div class="inside-price">' + data.price + ' ₽</div>';
     list.appendChild(newDiv);
 }
 
