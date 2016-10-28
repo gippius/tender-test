@@ -14,6 +14,35 @@ body {
     
 }
 
+
+header {
+    display: flex;
+    flex-direction: row;
+    background-color: #00bcd4;
+    justify-content: space-between;
+}
+
+#header-logo {
+    font-size: 38;
+    color: 	 #555555;
+    padding: 45px;
+    color: white;
+}
+
+#auth-form{
+    display:flex;
+    align-self: center;
+    flex-flow: column nowrap;
+}
+
+#auth-form div {
+    margin: 3px;
+}
+
+#auth-form button {
+    border: 1px solid white;
+}
+
 .tender-submit-button {
     background-color: #00bcd4;
     border: none;
@@ -23,6 +52,15 @@ body {
     font-size: 15px;
     width: 100px;
     border-radius: 3px;
+}
+
+.tender-submit-button:hover {
+    background-color: #0097A7;
+}
+.tender-submit-button:active {
+    background-color: #00838F;
+    padding-right: 2px;
+    padding-bottom: 2px;
 }
 
 .tender-input {
@@ -96,14 +134,6 @@ body {
 }
 
 
-
-header {
-    font-size: 38;
-    color: 	 #555555;
-    padding: 45px;
-    background-color: #00bcd4;
-    color: white;
-}
 
 footer {
   font-size: 13px;

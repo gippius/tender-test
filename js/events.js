@@ -17,14 +17,25 @@ var tender = {
         let body = 'action=remove&id=' + num;
         xhrSend('process.php', body);
     },
+    loginCheck: function () {
+        let login = document.getElementById('login-field').value,
+            password = document.getElementById('password-field').value,
+            body = "action=check&login=" + login + "&password=" + password;
+
+        xhrSend("login.php", body);
+    },
+    logOut: function(){
+        let body = 'action=logout';
+        xhrSend('login.php', body);
+    },
     callbackMapper: {
         dataSelected: function (response) {
-            let tendersCount = response.length;
+            let tenders=response['data'],
+            tendersCount = tenders.length;
 
             emptyTendersList();
             for (var i = 0; i < tendersCount; i++) {
-
-                pushNewTenderDiv(response[i]);
+                pushNewTenderDiv(tenders[i]);
             }
         },
         recordDeleted: function () {
@@ -38,6 +49,16 @@ var tender = {
         recordAdded: function () {
             console.log('table changed, refreshing now..');
             tender.getFromDB();
+        },
+        loginChecked: function (response) {
+            document.getElementById('auth-form').innerHTML = "<div>Здравствуйте, " +
+                response.data[0].login + "</div>" +
+				"<button class='tender-submit-button' onclick='tender.logOut()'>LOGOUT</button>";
+        },
+        logOut: function (response) {
+            document.getElementById('auth-form').innerHTML = "<input type='text' placeholder='login' id='login-field'>\
+			<input type='password' placeholder='password' id='password-field'>\
+			<button class='tender-submit-button' onclick='tender.loginCheck()'>LOGIN</button>";
         }
     }
 }
@@ -56,12 +77,11 @@ function responseHandle(data) {
         actionRequired = response.responseType;
 
     // skipping all responses except ones which types
-    // are known and provided by server php: 
-    // recordAdded, recordRemoved, dataSelected, tableTruncated
+    // are known and provided by server php
     if (!actionRequired || !tender.callbackMapper[actionRequired]) {
         return;
     }
-    tender.callbackMapper[actionRequired](response['data']);
+    tender.callbackMapper[actionRequired](response);
 }
 
 function pushNewTenderDiv(data) {

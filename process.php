@@ -1,7 +1,7 @@
 <?php
 $servername = 'localhost';
 $username='root';
-$password='password';
+$password='hsb932hu40';
 $dbname='tender1';
 
 if ($_POST['action'] == 'get'){
