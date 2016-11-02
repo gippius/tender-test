@@ -2,7 +2,11 @@
 
 $servername = 'localhost';
 $username='root';
+<<<<<<< HEAD
 $password='password';
+=======
+$password='$password';
+>>>>>>> origin/master
 $dbname='tender1';
 
 session_start();
@@ -138,6 +142,7 @@ function test_price_input($data){
     $data = htmlspecialchars($data);
     return $data;
 }
+<<<<<<< HEAD
 
 function throw_error($message){
     $dataArr = array('responseType'=>'error', 'message'=>$message);
@@ -152,3 +157,6 @@ function respond_with_data($responseType, $dataArr){
     echo $dataJSON;
 }
 ?>
+=======
+?>
+>>>>>>> origin/master
