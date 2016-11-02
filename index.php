@@ -1,5 +1,6 @@
 <?php
 session_start();
+include('process.php');
 ?>
 
 	<html>
@@ -22,8 +23,9 @@ session_start();
 			<div id='auth-form'>
 			<?php 
 			if (isset($_SESSION['username'])){
-				echo '<div>Здравствуйте, ' . $_SESSION['username'] . '</div>'.
-				"<button class='tender-submit-button' onclick='tender.logOut()'>LOGOUT</button>";
+				echo "<div id='user-welcome'>" . $_SESSION['username'] . "<br> Ваш счёт: " . $_SESSION['balance'] 
+				. "₽<br>Статус: " . $_SESSION['usertype'] . "</div>" .
+				"<button class='tender-submit-button' id='logout-button' onclick='tender.logOut()'>LOGOUT</button>";
 			}
 			else {
 				echo "<input type='text' placeholder='login' id='login-field'>".
@@ -33,7 +35,10 @@ session_start();
 			?>
 			</div>
 	</header>
-	<nav class="tender-nav">
+	<nav id="tender-nav">
+		<?php
+		if ($_SESSION['usertype'] == 'client'){
+			echo '
 		<section class="tender-control">
 			<div id="tenderNameContainer">
 				<div><input type="text" name="tenderName" class="tender-input" id="tenderName" placeholder="NAME"></div>
@@ -43,9 +48,12 @@ session_start();
 			</div>
 			<input type="hidden" name="tenderHash">
 			<div>
-				<button onclick="tender.addToDB()" class="tender-submit-button">SUBMIT</button>
-			</div>
-		</section> 
+				<button onclick="tender.addToDB()" class="tender-submit-button" id="add-tender-button">CREATE NEW</button>
+			</div> 
+		</section>
+		';}
+		?>
+		 
 	</nav>
 	<h2 id="main-section-header">Tenders available</h2>
 	<main id="tender-content">

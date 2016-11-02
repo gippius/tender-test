@@ -1,87 +1,110 @@
 var tender = {
+    // page event handlers
     addToDB: function () {
         let tenderName = document.getElementById('tenderName').value,
             tenderPrice = document.getElementById('tenderPrice').value,
             body = "action=add&name=" + tenderName + '&price=' + tenderPrice;
         xhrSend("process.php", body);
     },
-    getFromDB: function () {
+    refreshTendersData: function () {
         let body = "action=get";
         xhrSend("process.php", body);
     },
-    truncateDB: function () {
+    sessionCheck: function () {
+        let body = "action=sessionCheck";
+        xhrSend("login.php", body);
+    },
+    truncateDB: function () { // deprecated
         let body = 'action=truncate';
         xhrSend('process.php', body);
     },
-    removeFromDB: function (num) {
-        let body = 'action=remove&id=' + num;
+    markAsCompleted: function (num) {
+        let body = 'action=markcompleted&id=' + num;
         xhrSend('process.php', body);
     },
     loginCheck: function () {
         let login = document.getElementById('login-field').value,
             password = document.getElementById('password-field').value,
-            body = "action=check&login=" + login + "&password=" + password;
-
+            body = "action=login&login=" + login + "&password=" + password;
         xhrSend("login.php", body);
     },
-    logOut: function(){
+    logOut: function () {
         let body = 'action=logout';
         xhrSend('login.php', body);
     },
+    sessionCheck: function () {
+        let body = 'action=sessioncheck';
+        xhrSend('login.php', body);
+    },
+    // stores callback functions for every type
+    // of server 'responseType' answer
     callbackMapper: {
         dataSelected: function (response) {
-            let tenders=response['data'],
-            tendersCount = tenders.length;
-
+            console.log(response);
+            let tenders = response.data,
+                tendersCount = tenders.length;
             emptyTendersList();
             for (var i = 0; i < tendersCount; i++) {
                 pushNewTenderDiv(tenders[i]);
             }
         },
-        recordDeleted: function () {
-            console.log('table changed, refreshing now..');
-            tender.getFromDB();
-        },
-        tableTruncated: function () {
-            console.log('table changed, refreshing now..');
-            tender.getFromDB();
-        },
         recordAdded: function () {
-            console.log('table changed, refreshing now..');
-            tender.getFromDB();
+            console.log('Tender added, refreshing table');
+            tender.refreshTendersData();
+            tender.sessionCheck();
         },
-        loginChecked: function (response) {
-            document.getElementById('auth-form').innerHTML = "<div>Здравствуйте, " +
-                response.data[0].login + "</div>" +
-				"<button class='tender-submit-button' onclick='tender.logOut()'>LOGOUT</button>";
+        tenderCompleted: function (response) {
+            console.log(response);
+            tender.sessionCheck();
+            tender.refreshTendersData();
         },
-        logOut: function (response) {
+        loggedIn: function (response) {
+            console.log(response);
+            refreshControlForms(response);
+            tender.refreshTendersData();
+        },
+        sessionChecked: function (response) {
+            console.log(response);
+            refreshControlForms(response);
+            tender.refreshTendersData();
+        },
+        error: function (response) {
+            console.log(response.message);
+        },
+        loggedOut: function (response) {
+            console.log(response.data);
             document.getElementById('auth-form').innerHTML = "<input type='text' placeholder='login' id='login-field'>\
 			<input type='password' placeholder='password' id='password-field'>\
 			<button class='tender-submit-button' onclick='tender.loginCheck()'>LOGIN</button>";
+
+            document.getElementById('tender-nav').innerHTML = '';
+            tender.refreshTendersData();
+        },
+        clientCannotWinTenders: function (response) {
+            console.log(response[0]);
         }
     }
 }
 
-// listening server for refresh command
-let eventSource = new EventSource('eventTransmitter.php');
-eventSource.onmessage = function (e) {
-    console.log(e);
-}
+// first load
+document.addEventListener('DOMContentLoaded', tender.sessionCheck);
+document.addEventListener('DOMContentLoaded', tender.refreshTendersData);
 
-document.addEventListener('DOMContentLoaded', tender.getFromDB);
-
-function responseHandle(data) {
-    // parsed response looks like {"responseType": "type", "data": [{..}, {..}..]}
-    let response = JSON.parse(data),
-        actionRequired = response.responseType;
-
+function responseHandle(response) {
+    // parsed response looks like 
+    // {"responseType": "type", "data/message" (if any): [{..}, {..}..]}
+    let parsedResponse = JSON.parse(response),
+        responseType = parsedResponse.responseType,
+        data = parsedResponse.data;
     // skipping all responses except ones which types
-    // are known and provided by server php
-    if (!actionRequired || !tender.callbackMapper[actionRequired]) {
+    // are known and described above in 'callbackMapper'
+    //
+    // DEBUG
+    console.log(parsedResponse);
+    if (!tender.callbackMapper[responseType]) {
         return;
     }
-    tender.callbackMapper[actionRequired](response);
+    tender.callbackMapper[responseType](parsedResponse);
 }
 
 function pushNewTenderDiv(data) {
@@ -91,8 +114,8 @@ function pushNewTenderDiv(data) {
     newDiv.setAttribute('data-id', thisId);
     newDiv.classList.add('tender-div');
     newDiv.addEventListener('click', function () {
-        tender.removeFromDB(thisId);
-        console.log('removing record number ' + thisId);
+        tender.markAsCompleted(thisId);
+        // console.log('removing record number ' + thisId);
     });
     newDiv.innerHTML = '<div class="inside-name">' + thisId + '. ' +
         data.name + '</div><div class="inside-price">' + data.price + ' ₽</div>';
@@ -103,11 +126,33 @@ function emptyTendersList() {
     document.getElementById('tender-content').innerHTML = '';
 }
 
+function refreshControlForms(response) {
+    let user = response.data[0];
+    document.getElementById('auth-form').innerHTML = "<div id='user-welcome'>" +
+        user.name + "<br> Ваш счёт: " + user.balance + "₽<br>Статус: " + user.usertype + "</div>" +
+        "<button class='tender-submit-button' onclick='tender.logOut()'>LOGOUT</button>";
+    if (user.usertype == 'client') {
+        document.getElementById('tender-nav').innerHTML = '<section class="tender-control">\
+			<div id="tenderNameContainer">\
+				<div><input type="text" name="tenderName" class="tender-input" id="tenderName" placeholder="NAME"></div>\
+			</div>\
+			<div id="tenderPriceContainer">\
+				<div><input type="text" name="tenderPrice" class="tender-input" id="tenderPrice" placeholder="PRICE"></div>\
+			</div>\
+			<input type="hidden" name="tenderHash">\
+			<div>\
+				<button onclick="tender.addToDB()" class="tender-submit-button">SUBMIT</button>\
+			</div>\
+		</section>';
+    }
+}
+
+// shorthand for AJAX, native way
 function xhrSend(url, body) {
     let r = new XMLHttpRequest();
     r.open("POST", url, true);
     r.addEventListener("load", function () {
-        if (r.readyState == 4 && r.status == 200) {
+        if (r.readyState == 4 && r.status == 200) { 
             responseHandle(r.responseText);
         }
     });
